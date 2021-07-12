@@ -1,37 +1,46 @@
 
+const express = require('express');
+const hbs = require(`hbs`);
+require('dotenv').config();
 
-const http = require('http');
-http.createServer( (req, res) =>{
 
-    // res.writeHead(200, { 'content-type': 'text/plain' });
-    // res.write('Hola pagina');
+const app = express();
+const port = process.env.PORT;  
 
-    // res.writeHead(200, { 'content-type': 'application/JSON' });
+//uso de middlewares para servir contenido estatico en este caso
+app.use(express.static('public' ));//si la carpeta public no esta 
+//en la raiz hay que escribir la ruta exacta
+// Handlebars
+app.set('view engine', 'hbs');
+hbs.registerPartials( __dirname + '/views/partials')
+app.get('/', (req, res) =>{
+    res.render('home',{
+        name: 'Ricardo',
+        title: 'Curso node'
+    });
 
-    // const people = {
-    //     id: 1,
-    //     name: 'David'
-    // }
-    // res.write(JSON.stringify( people ));
-    res.setHeader(  'Content-Disposition', 'attachment; filename = lista.csv');
-    
-    res.writeHead(200, { 'content-type': 'application/csv'});
-    res.write( 'id, nombre\n' );
-    res.write( '1, Fernando\n' );
-    res.write( '2, Maria\n' );
-    res.write( '3, Juan\n' );
-    res.write( '4, Pedro\n' );
-
-    res.end();
-    // res.writeHead(404);
-    // res.write('404 | not found');
-
-/** Codes/status:
- * 201 : se acaba de crear algo
- * 404: error, no encontrado
- * (todos los 200 son mensajes exitosos)
- * 
- */
 })
-.listen(8080);
-console.log("hola cons1ola");
+app.get('/generic', (req, res) =>{
+    res.render( 'generic', {
+        name: 'Ricardo',
+        title: 'Curso node'
+    } );
+
+})
+app.get('/elements', (req, res) =>{
+    res.render( 'elements', {
+        name: 'Ricardo',
+        title: 'Curso node'
+    } );
+
+})
+app.get('/*', (req, res) =>{
+    res.sendFile(__dirname + '/public/404.html');
+
+})
+app.get('/bye',(req, res) =>{ 
+    res.send('Adios mundo pagina');
+
+})
+app.listen(port);
+console.log('escuchando en puerto: ', port);
